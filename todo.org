@@ -1,0 +1,6 @@
+#+title: Todo Procedural Generation
+
+* DONE Being able to print the map
+* TODO Being able to add some piece for additional generation
+* TODO Being able to parameter the generation
+* TODO Density matrix
