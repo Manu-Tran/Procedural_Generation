@@ -1,17 +1,26 @@
-public class Board {
+public class Board
+{
     int[,] board;
+    int[,] traps;
     int height;
     int width;
+    private int eltCount;
+    private int blockCount;
 
-    public Board(int height, int width) {
+    public Board(int height, int width)
+    {
         this.height = height;
         this.width = width;
         this.board = new int[height, width];
+        this.traps = new int[height, width];
+        this.eltCount = 0;
     }
 
     // add the block to the board if possible
-    public bool addBlock(int[,] block, int[] pos) {
-        if (!checkBlock(block, pos)) {
+    public bool addBlock(int[,] block, int[] pos)
+    {
+        if (!checkBlock(block, pos))
+        {
             return false;
         }
 
@@ -19,25 +28,47 @@ public class Board {
         var block_width = block.GetLength(1);
         var y = pos[0];
         var x = pos[1];
-        for (int i = 0; i < block_height; i++) {
-            for (int j = 0; j < block_width; j++) {
-                set(y+i,x+j, block[i,j]);
+        for (int i = 0; i < block_height; i++)
+        {
+            for (int j = 0; j < block_width; j++)
+            {
+                set(y + i, x + j, block[i, j]);
             }
         }
+        this.blockCount += 1;
         return true;
     }
 
-    public int get(int y, int x) {
-        return this.board[y,x];
+    public bool addBlock(int[,] block, int y, int x)
+    {
+        var pos = new int[2];
+        pos[0] = y;
+        pos[1] = x;
+        return addBlock(block, pos);
     }
 
-    public bool set(int y, int x, int value) {
-        this.board[y,x] = value;
+    public int get(int y, int x)
+    {
+        return this.board[y, x];
+    }
+
+    public bool set(int y, int x, int value)
+    {
+        if (this.board[y,x] == Tile.Empty.toInt() && value != Tile.Empty.toInt()) {
+           this.eltCount += 1;
+        }
+
+        if (this.board[y,x] != Tile.Empty.toInt() && value == Tile.Empty.toInt()) {
+           this.eltCount -= 1;
+        }
+
+        this.board[y, x] = value;
         return true;
     }
 
     // check if the block fits in the board
-    public bool checkBlock(int[,] block, int[] pos) {
+    public bool checkBlock(int[,] block, int[] pos)
+    {
         var block_height = block.GetLength(0);
         var block_width = block.GetLength(1);
         var y = pos[0];
@@ -51,14 +82,37 @@ public class Board {
         }
 
         // Check that every spot is free
-        for (int i = 0; i < block_height; i++) {
-            for (int j = 0; j < block_width; j++) {
-                if ((block[i,j] != 0) && (get(y+i, x+j) != 0)) {
+        // TODO add specific conditions
+        for (int i = 0; i < block_height; i++)
+        {
+            for (int j = 0; j < block_width; j++)
+            {
+                if ((block[i, j] != 0) && (get(y + i, x + j) != 0))
+                {
                     return false;
                 }
             }
         }
 
         return true;
+    }
+
+    public void writeToFile(string path)
+    {
+        using (StreamWriter writer = new StreamWriter(path))
+        {
+            for (var i = 0; i < height; i++)
+            {
+                for (var j = 0; j < width; j++)
+                {
+                    writer.Write(board[i, j]);
+                }
+                writer.WriteLine("");
+            }
+        }
+    }
+
+    public int getEltCount() {
+       return eltCount;
     }
 }
