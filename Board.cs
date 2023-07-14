@@ -52,17 +52,28 @@ public class Board
         return this.board[y, x];
     }
 
+    public int getTrap(int y, int x)
+    {
+        return this.traps[y, x];
+    }
+
     public bool set(int y, int x, int value)
     {
-        if (this.board[y,x] == Tile.Empty.toInt() && value != Tile.Empty.toInt()) {
+
+        var tile = this.board[y,x];
+        if (tile == Tile.Empty.toInt() && value != Tile.Empty.toInt()) {
            this.eltCount += 1;
         }
 
-        if (this.board[y,x] != Tile.Empty.toInt() && value == Tile.Empty.toInt()) {
+        if (tile != Tile.Empty.toInt() && value == Tile.Empty.toInt()) {
            this.eltCount -= 1;
         }
 
-        this.board[y, x] = value;
+        if (tile.isTrap()) {
+            this.traps[y, x] = value;
+        } else {
+            this.board[y, x] = value;
+        }
         return true;
     }
 
@@ -87,7 +98,7 @@ public class Board
         {
             for (int j = 0; j < block_width; j++)
             {
-                if ((block[i, j] != 0) && (get(y + i, x + j) != 0))
+                if ((block[i, j] != 0) && (get(y + i, x + j) != 0) && (traps[i, j] != 0))
                 {
                     return false;
                 }
